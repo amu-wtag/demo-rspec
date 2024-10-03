@@ -168,4 +168,31 @@ describe 'Expectation Matchers' do
       expect(customer.has_pending_order?).to be_truthy
     end
   end
+
+  describe '** Observation matchers' do
+    it 'will match when events change object attributes' do
+      # calls the test before the block, then again after the block
+      ar = []
+      expect { ar << 1 }.to change(ar, :empty?).from(true).to(false)
+
+      class WebsiteHits
+        attr_accessor :count
+
+        def initialize
+          @count = 0
+        end
+
+        def increment
+          @count += 1
+        end
+      end
+      hits = WebsiteHits.new
+      expect { hits.increment }.to change(hits, :count).from(0).to(1)
+    end
+
+    it 'will match when errors are raised ' do
+      expect { 1 / 0 }.to raise_error(ZeroDivisionError)
+      expect { 1 / 0 }.to raise_error.with_message('divided by 0')
+    end
+  end
 end

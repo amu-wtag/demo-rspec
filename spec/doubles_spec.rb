@@ -89,5 +89,39 @@ describe 'Doubles' do
       customers = Customer.all
       expect(customers[1].name).to eq('Mary')
     end
+
+    it 'mocks a method' do
+      car = double('Car')
+      expect(car).to receive(:start).with('key').and_return(true)
+
+      car.start('key') # we must call it
+    end
+
+    context 'with message expectations' do
+      it 'expects a call and allows a response' do
+        dbl = double('Chant')
+        expect(dbl).to receive(:hey!).and_return('Ho!')
+        dbl.hey!
+      end
+
+      it 'does not matter which order' do
+        dbl = double('Multi-step Process')
+        expect(dbl).to receive(:step_1)
+        expect(dbl).to receive(:step_2)
+
+        dbl.step_1
+        dbl.step_2
+      end
+
+      it 'works with #ordered when order matter' do
+        dbl = double('Multi-step Process')
+        expect(dbl).to receive(:step_1).ordered
+        expect(dbl).to receive(:step_2).ordered
+
+        # if we call step_2 before step_1 ot will be a failure
+        dbl.step_1
+        dbl.step_2
+      end
+    end
   end
 end
